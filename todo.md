@@ -1,0 +1,3 @@
+- get the openapi, types, schemas in an npm package? Or load directly from git?
+- how do we want to show users? Probably a table, then a details/edit view?
+- login with congito admin credentials
