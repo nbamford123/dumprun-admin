@@ -41,20 +41,25 @@ const authGuard = async (
 
 // Route loading handler
 const beforeRoute = async (context: RouteContext, command: Commands) => {
-	// // Start loading
-	// router.setLoading(true);
-	// try {
-	// 	// Wait for auth guard
-	// 	const result = await authGuard(context, command);
-	// 	if (result) {
-	// 		return result;
-	// 	}
-	// } finally {
-	// 	// Stop loading after a small delay to prevent flash
-	// 	setTimeout(() => {
-	// 		Router.setLoading(false);
-	// 	}, 100);
-	// }
+	// Start loading
+	const loadingOverlay = document.getElementById('loading-overlay');
+	if (loadingOverlay) {
+		loadingOverlay.classList.add('active');
+	}
+	try {
+		// Wait for auth guard
+		const result = await authGuard(context, command);
+		if (result) {
+			return result;
+		}
+	} finally {
+		// Stop loading after a small delay to prevent flash
+		setTimeout(() => {
+			if (loadingOverlay) {
+				loadingOverlay.classList.remove('active');
+			}
+		}, 100);
+	}
 };
 
 export function initRouter(outlet: HTMLElement) {

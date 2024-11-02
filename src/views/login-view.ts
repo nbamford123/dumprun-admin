@@ -1,73 +1,70 @@
 // src/views/login-view.ts
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
+import '@shoelace-style/shoelace/dist/components/card/card.js';
+import '@shoelace-style/shoelace/dist/components/input/input.js';
+import '@shoelace-style/shoelace/dist/components/button/button.js';
+import '@shoelace-style/shoelace/dist/components/spinner/spinner.js';
 
 import { router } from '@/router.js';
 import { authService } from '@/services/authService.js';
+import { notify } from '@/services/toastService.js';
 
 @customElement('login-view')
 export class LoginView extends LitElement {
-	@state() private username = '';
-	@state() private password = '';
-	@state() private error = '';
-	@state() private loading = false;
-
 	static styles = css`
     :host {
+      display: block;
+      min-height: 100vh;
+      background: var(--sl-color-neutral-50);
+      padding: 1rem;
+    }
+
+    .container {
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      background: #f8f9fa;
+      min-height: inherit;
     }
 
-    .login-container {
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      width: 100%;
+    sl-card {
       max-width: 400px;
+      width: 100%;
     }
 
-    h1 {
-      margin: 0 0 1.5rem;
+    .title {
+      margin: 0 0 var(--sl-spacing-large);
       text-align: center;
-    }
-
-    .error { 
-      color: red;
-      margin: 10px 0;
-      text-align: center;
+      font-size: var(--sl-font-size-large);
+      font-weight: var(--sl-font-weight-semibold);
     }
 
     form {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: var(--sl-spacing-medium);
     }
 
-    input {
-      padding: 0.75rem;
-      border: 1px solid #dee2e6;
-      border-radius: 4px;
-      font-size: 1rem;
+    .error {
+      margin-bottom: var(--sl-spacing-medium);
     }
 
-    button {
-      padding: 0.75rem;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 1rem;
-      cursor: pointer;
+    sl-button::part(base) {
+      width: 100%;
     }
 
-    button:disabled {
-      background: #ccc;
+    sl-button::part(label) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sl-spacing-small);
     }
   `;
+
+	@state() private username = '';
+	@state() private password = '';
+	@state() private error = '';
+	@state() private loading = false;
 
 	async handleSubmit(e: Event) {
 		e.preventDefault();
@@ -82,6 +79,7 @@ export class LoginView extends LitElement {
 			await router.render(intendedRoute);
 		} catch (err) {
 			this.error = err instanceof Error ? err.message : 'An error occurred';
+			notify(this.error, 'danger', 'exclamation-octagon');
 		} finally {
 			this.loading = false;
 		}
@@ -89,28 +87,47 @@ export class LoginView extends LitElement {
 
 	render() {
 		return html`
-      <div class="login-container">
-        <h1>Admin Login</h1>
-        <form @submit=${this.handleSubmit}>
-          ${this.error ? html`<div class="error">${this.error}</div>` : ''}
-          <input
-            type="text"
-            placeholder="Username"
-            .value=${this.username}
-            @input=${(e: InputEvent) => (this.username = (e.target as HTMLInputElement).value)}
-            ?disabled=${this.loading}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            .value=${this.password}
-            @input=${(e: InputEvent) => (this.password = (e.target as HTMLInputElement).value)}
-            ?disabled=${this.loading}
-          />
-          <button type="submit" ?disabled=${this.loading}>
-            ${this.loading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
+      <div class="container">
+        <sl-card>
+          <h1 class="title">DumpRun Admin Login</h1>
+          
+          <form @submit=${this.handleSubmit}>
+            <sl-input
+              label="Username"
+              type="text"
+              required
+              .value=${this.username}
+              ?disabled=${this.loading}
+              @sl-input=${(e: InputEvent) => {
+								this.username = (e.target as HTMLInputElement).value;
+							}}
+              autocomplete="username"
+            ></sl-input>
+
+            <sl-input
+              label="Password"
+              type="password"
+              required
+              .value=${this.password}
+              ?disabled=${this.loading}
+              @sl-input=${(e: InputEvent) => {
+								this.password = (e.target as HTMLInputElement).value;
+							}}
+              password-toggle
+              autocomplete="current-password"
+            ></sl-input>
+
+            <sl-button type="submit" variant="primary" ?disabled=${this.loading}>
+              ${
+								this.loading
+									? html`
+                <sl-spinner></sl-spinner> Signing in...
+              `
+									: 'Sign In'
+							}
+            </sl-button>
+          </form>
+        </sl-card>
       </div>
     `;
 	}

@@ -58,11 +58,13 @@
             100% { transform: rotate(360deg); }
         }
     </style>
-
     <!-- Entry point -->
     <script type="module" src="/src/main.ts"></script>
 </head>
 <body>
+    <div class="route-loading" id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
     <admin-app></admin-app>
 </body>
 </html>

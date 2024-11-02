@@ -14,14 +14,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@types/node": "^22.8.6",
     "typescript": "^5.6.3",
     "vite": "^5.4.10"
   },
   "dependencies": {
     "@aws-amplify/auth": "^6.6.0",
-    "@biomejs/biome": "^1.9.4",
     "@preact/signals-core": "^1.8.0",
+    "@shoelace-style/shoelace": "^2.18.0",
     "@vaadin/router": "^2.0.0",
     "aws-amplify": "^6.8.0",
     "lit": "^3.2.1"

@@ -52,15 +52,15 @@ export class AuthService {
 	}
 
 	async signIn(username: string, password: string): Promise<SignInOutput> {
-		try {
+		// try {
 			const signInResult = await signIn({
 				username,
 				password,
 			});
 			return signInResult;
-		} catch (error) {
-			throw this.handleError(error as CognitoError);
-		}
+		// } catch (error) {
+		// 	throw this.handleError(error as CognitoError);
+		// }
 	}
 
 	async signOut() {
@@ -89,6 +89,7 @@ export class AuthService {
 	}
 
 	private handleError(error: CognitoError): Error {
+		console.log(error)
 		if (!error.code) {
 			return new Error('An unknown error occurred');
 		}
