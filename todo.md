@@ -1,3 +1,6 @@
+- perhaps we need a can't connect state for the health checks? Or is that defacto unhealthy?
+- color on those statuses and icons! C'mon, man.
 - get the openapi, types, schemas in an npm package? Or load directly from git?
 - how do we want to show users? Probably a table, then a details/edit view?
-- login with congito admin credentials
+- it looks like I could just copy out the icons I need and set the base path, but is that really the problem with the big bundle?
+- maybe biome isn't a good fit for the front end, yet? Prettier doesn't do html or lit template literals, no linting for lit (and ?)

@@ -1,7 +1,6 @@
 // src/components/app-layout.ts
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-
 import '@shoelace-style/shoelace/dist/components/drawer/drawer.js';
 import '@shoelace-style/shoelace/dist/components/icon-button/icon-button.js';
 import '@shoelace-style/shoelace/dist/components/dropdown/dropdown.js';
@@ -9,9 +8,9 @@ import '@shoelace-style/shoelace/dist/components/menu/menu.js';
 import '@shoelace-style/shoelace/dist/components/menu-item/menu-item.js';
 import '@shoelace-style/shoelace/dist/components/avatar/avatar.js';
 
-import { router } from '@/router.js';
 import { authService } from '@/services/authService.js';
 import { notify } from '@/services/toastService.js';
+import { router } from '@/router.js';
 
 @customElement('app-layout')
 export class AppLayout extends LitElement {
@@ -31,15 +30,23 @@ export class AppLayout extends LitElement {
     }
 
     header {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      
       align-items: center;
-      gap: var(--sl-spacing-medium);
-      padding: var(--sl-spacing-small) var(--sl-spacing-large);
+      padding: var(--sl-spacing-medium) var(--sl-spacing-large);
       background: var(--sl-color-neutral-0);
       border-bottom: 1px solid var(--sl-color-neutral-200);
+      gap: var(--sl-spacing-large);
     }
 
     .header-start {
+      display: flex;
+      align-items: center;
+      gap: var(--sl-spacing-medium);
+    }
+
+    .header-center {
       display: flex;
       align-items: center;
       gap: var(--sl-spacing-medium);
@@ -62,25 +69,6 @@ export class AppLayout extends LitElement {
       gap: var(--sl-spacing-x-small);
     }
 
-    .content {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      min-height: 100%;
-    }
-
-    nav {
-      background: var(--sl-color-neutral-50);
-      padding: var(--sl-spacing-medium);
-      border-right: 1px solid var(--sl-color-neutral-200);
-      width: 250px;
-    }
-
-    .nav-content {
-      display: flex;
-      flex-direction: column;
-      gap: var(--sl-spacing-small);
-    }
-
     main {
       padding: var(--sl-spacing-large);
       background: var(--sl-color-neutral-0);
@@ -90,21 +78,33 @@ export class AppLayout extends LitElement {
       display: none;
     }
 
+    /* Desktop Navigation */
+    .nav-content {
+      display: flex;
+      align-items: center;
+      gap: var(--sl-spacing-small);
+    }
+
+    .nav-content sl-button::part(base) {
+      font-size: var(--sl-font-size-small);
+      font-weight: var(--sl-font-weight-semibold);
+    }
+
+    .nav-content sl-button::part(base):hover {
+      background: var(--sl-color-neutral-100);
+    }
+
     @media (max-width: 768px) {
       .mobile-menu {
         display: block;
       }
 
-      .content {
-        grid-template-columns: 1fr;
-      }
-
-      nav {
+      .nav-content {
         display: none;
       }
     }
 
-    /* Style Shoelace components */
+    /* Shoelace component styles */
     sl-dropdown::part(panel) {
       z-index: 100;
     }
@@ -116,13 +116,24 @@ export class AppLayout extends LitElement {
     .user-menu::part(base) {
       width: 200px;
     }
+
+    /* Mobile drawer styles */
+    .drawer-nav {
+      padding: var(--sl-spacing-medium);
+    }
+
+    .drawer-nav sl-button {
+      width: 100%;
+      justify-content: flex-start;
+      margin-bottom: var(--sl-spacing-x-small);
+    }
   `;
 
 	private async handleLogout() {
 		try {
 			await authService.signOut();
-      router.render('/');
 			notify('Logged out successfully', 'success');
+			router.render('/login');
 		} catch (error) {
 			notify('Failed to log out', 'danger');
 		}
@@ -149,9 +160,27 @@ export class AppLayout extends LitElement {
 							e.preventDefault();
 							router.render('/');
 						}}>
-              <sl-icon name="lightning-charge-fill"></sl-icon>
-              Your App
+              <sl-icon name="truck"></sl-icon>
+              DumpRun Admin Tool
             </a>
+          </div>
+
+          <!-- Desktop Navigation -->
+          <div class="header-center nav-content">
+            <sl-button href="/dashboard" variant="text" size="small">
+              <sl-icon slot="prefix" name="speedometer"></sl-icon>
+              Dashboard
+            </sl-button>
+            
+            <sl-button href="/users" variant="text" size="small">
+              <sl-icon slot="prefix" name="people"></sl-icon>
+              Users
+            </sl-button>
+            
+            <sl-button href="/settings" variant="text" size="small">
+              <sl-icon slot="prefix" name="gear"></sl-icon>
+              Settings
+            </sl-button>
           </div>
 
           <div class="header-end">
@@ -185,36 +214,16 @@ export class AppLayout extends LitElement {
           </div>
         </header>
 
-        <div class="content">
-          <!-- Mobile Navigation Drawer -->
-          <sl-drawer
-            label="Navigation"
-            .open=${this.drawerOpen}
-            @sl-hide=${() => {
-							this.drawerOpen = false;
-						}}
-            placement="start"
-          >
-            <nav class="nav-content">
-              <sl-button href="/dashboard" variant="text">
-                <sl-icon slot="prefix" name="speedometer"></sl-icon>
-                Dashboard
-              </sl-button>
-              
-              <sl-button href="/users" variant="text">
-                <sl-icon slot="prefix" name="people"></sl-icon>
-                Users
-              </sl-button>
-              
-              <sl-button href="/settings" variant="text">
-                <sl-icon slot="prefix" name="gear"></sl-icon>
-                Settings
-              </sl-button>
-            </nav>
-          </sl-drawer>
-
-          <!-- Desktop Navigation -->
-          <nav class="nav-content">
+        <!-- Mobile Navigation Drawer -->
+        <sl-drawer
+          label="Navigation"
+          .open=${this.drawerOpen}
+          @sl-hide=${() => {
+						this.drawerOpen = false;
+					}}
+          placement="start"
+        >
+          <nav class="drawer-nav">
             <sl-button href="/dashboard" variant="text">
               <sl-icon slot="prefix" name="speedometer"></sl-icon>
               Dashboard
@@ -230,12 +239,12 @@ export class AppLayout extends LitElement {
               Settings
             </sl-button>
           </nav>
+        </sl-drawer>
 
-          <!-- Main Content -->
-          <main>
-            <slot></slot>
-          </main>
-        </div>
+        <!-- Main Content -->
+        <main>
+          <slot></slot>
+        </main>
       </div>
     `;
 	}

@@ -8,9 +8,9 @@ importers:
 
   .:
     dependencies:
-      '@aws-amplify/auth':
-        specifier: ^6.6.0
-        version: 6.6.0(@aws-amplify/core@6.5.1)
+      '@aws-amplify/api':
+        specifier: ^6.1.1
+        version: 6.1.1(@aws-amplify/core@6.5.1)
       '@preact/signals-core':
         specifier: ^1.8.0
         version: 1.8.0
@@ -31,14 +31,14 @@ importers:
         specifier: ^1.9.4
         version: 1.9.4
       '@types/node':
-        specifier: ^22.8.6
-        version: 22.8.6
+        specifier: ^22.8.7
+        version: 22.8.7
       typescript:
         specifier: ^5.6.3
         version: 5.6.3
       vite:
         specifier: ^5.4.10
-        version: 5.4.10(@types/node@22.8.6)
+        version: 5.4.10(@types/node@22.8.7)
 
 packages:
 
@@ -756,8 +756,8 @@ packages:
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
 
-  '@types/node@22.8.6':
-    resolution: {integrity: sha512-tosuJYKrIqjQIlVCM4PEGxOmyg3FCPa/fViuJChnGeEIhjA46oy8FMVoF9su1/v8PNs2a8Q0iFNyOx0uOF91nw==}
+  '@types/node@22.8.7':
+    resolution: {integrity: sha512-LidcG+2UeYIWcMuMUpBKOnryBWG/rnmOHQR5apjn8myTQcx3rinFRn7DcIFhMnS0PPFSC6OafdIKEad0lj6U0Q==}
 
   '@types/prop-types@15.7.13':
     resolution: {integrity: sha512-hCZTSvwbzWGvhqxp/RqVqwU999pBf2vp7hzIjiYOsl8wqOmUxkQ6ddw1cV3l8811+kdUFus/q4d1Y3E3SyEifA==}
@@ -1040,13 +1040,13 @@ snapshots:
       '@aws-crypto/util': 5.2.0
       '@aws-sdk/types': 3.609.0
       '@aws-sdk/util-locate-window': 3.679.0
-      '@smithy/util-utf8': 2.3.0
+      '@smithy/util-utf8': 2.0.0
       tslib: 2.8.1
 
   '@aws-crypto/sha256-js@5.2.0':
     dependencies:
       '@aws-crypto/util': 5.2.0
-      '@aws-sdk/types': 3.609.0
+      '@aws-sdk/types': 3.398.0
       tslib: 2.8.1
 
   '@aws-crypto/supports-web-crypto@5.2.0':
@@ -1055,7 +1055,7 @@ snapshots:
 
   '@aws-crypto/util@5.2.0':
     dependencies:
-      '@aws-sdk/types': 3.609.0
+      '@aws-sdk/types': 3.398.0
       '@smithy/util-utf8': 2.3.0
       tslib: 2.8.1
 
@@ -2053,7 +2053,7 @@ snapshots:
 
   '@types/json-schema@7.0.15': {}
 
-  '@types/node@22.8.6':
+  '@types/node@22.8.7':
     dependencies:
       undici-types: 6.19.8
 
@@ -2232,11 +2232,11 @@ snapshots:
 
   uuid@9.0.1: {}
 
-  vite@5.4.10(@types/node@22.8.6):
+  vite@5.4.10(@types/node@22.8.7):
     dependencies:
       esbuild: 0.21.5
       postcss: 8.4.47
       rollup: 4.24.3
     optionalDependencies:
-      '@types/node': 22.8.6
+      '@types/node': 22.8.7
       fsevents: 2.3.3

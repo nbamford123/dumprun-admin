@@ -7,10 +7,18 @@ const escapeHtml = (html: string): string => {
 	return div.innerHTML;
 };
 
+export type ToastVariant =
+	| 'primary'
+	| 'success'
+	| 'neutral'
+	| 'warning'
+	| 'danger';
+
+// TODO: add icons here for the variants
 // Custom function to emit toast notifications
 export const notify = (
 	message: string,
-	variant = 'primary',
+	variant: ToastVariant = 'primary',
 	icon = 'info-circle',
 	duration = 3000,
 ) => {

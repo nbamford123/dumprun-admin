@@ -39,6 +39,14 @@ export class AuthService {
 
 	configure(config: AuthConfig) {
 		Amplify.configure({
+			API: {
+				REST: {
+					DumpRunApi: {
+						endpoint: import.meta.env.VITE_AWS_GATEWAY_API_BASE_PATH || '',
+						region: import.meta.env.VITE_AWS_REGION,
+					},
+				},
+			},
 			Auth: {
 				Cognito: {
 					userPoolId: config.userPoolId,
@@ -53,11 +61,11 @@ export class AuthService {
 
 	async signIn(username: string, password: string): Promise<SignInOutput> {
 		// try {
-			const signInResult = await signIn({
-				username,
-				password,
-			});
-			return signInResult;
+		const signInResult = await signIn({
+			username,
+			password,
+		});
+		return signInResult;
 		// } catch (error) {
 		// 	throw this.handleError(error as CognitoError);
 		// }
@@ -89,7 +97,7 @@ export class AuthService {
 	}
 
 	private handleError(error: CognitoError): Error {
-		console.log(error)
+		console.log(error);
 		if (!error.code) {
 			return new Error('An unknown error occurred');
 		}
