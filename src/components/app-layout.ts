@@ -7,6 +7,9 @@ import '@shoelace-style/shoelace/dist/components/dropdown/dropdown.js';
 import '@shoelace-style/shoelace/dist/components/menu/menu.js';
 import '@shoelace-style/shoelace/dist/components/menu-item/menu-item.js';
 import '@shoelace-style/shoelace/dist/components/avatar/avatar.js';
+import '@shoelace-style/shoelace/dist/components/button/button.js';
+import '@shoelace-style/shoelace/dist/components/icon/icon.js';
+import '@shoelace-style/shoelace/dist/components/divider/divider.js';
 
 import { authService } from '@/services/authService.js';
 import { notify } from '@/services/toastService.js';
@@ -14,10 +17,10 @@ import { router } from '@/router.js';
 
 @customElement('app-layout')
 export class AppLayout extends LitElement {
-	@state()
-	private drawerOpen = false;
+  @state()
+  private drawerOpen = false;
 
-	static styles = css`
+  static styles = css`
     :host {
       display: block;
       min-height: 100vh;
@@ -32,7 +35,7 @@ export class AppLayout extends LitElement {
     header {
       display: grid;
       grid-template-columns: 1fr auto 1fr;
-      
+
       align-items: center;
       padding: var(--sl-spacing-medium) var(--sl-spacing-large);
       background: var(--sl-color-neutral-0);
@@ -129,18 +132,18 @@ export class AppLayout extends LitElement {
     }
   `;
 
-	private async handleLogout() {
-		try {
-			await authService.signOut();
-			notify('Logged out successfully', 'success');
-			router.render('/login');
-		} catch (error) {
-			notify('Failed to log out', 'danger');
-		}
-	}
+  private async handleLogout() {
+    try {
+      await authService.signOut();
+      notify('Logged out successfully', 'success');
+      router.render('/login');
+    } catch (error) {
+      notify('Failed to log out', 'danger');
+    }
+  }
 
-	render() {
-		return html`
+  render() {
+    return html`
       <div class="layout">
         <!-- Header -->
         <header>
@@ -151,15 +154,15 @@ export class AppLayout extends LitElement {
               name="list"
               label="Menu"
               @click=${() => {
-								this.drawerOpen = true;
-							}}
+                this.drawerOpen = true;
+              }}
             ></sl-icon-button>
 
             <!-- Logo -->
             <a href="/" class="logo" @click=${(e: Event) => {
-							e.preventDefault();
-							router.render('/');
-						}}>
+              e.preventDefault();
+              router.render('/');
+            }}>
               <sl-icon name="truck"></sl-icon>
               DumpRun Admin Tool
             </a>
@@ -167,7 +170,7 @@ export class AppLayout extends LitElement {
 
           <!-- Desktop Navigation -->
           <div class="header-center nav-content">
-            <sl-button href="/dashboard" variant="text" size="small">
+            <sl-button href="/" variant="text" size="small">
               <sl-icon slot="prefix" name="speedometer"></sl-icon>
               Dashboard
             </sl-button>
@@ -193,7 +196,7 @@ export class AppLayout extends LitElement {
               ></sl-avatar>
 
               <sl-menu class="user-menu">
-                <sl-menu-item @click=${() => router.render('/profile')}>
+                <sl-menu-item @click=${() => router.render('/users')}>
                   <sl-icon slot="prefix" name="person"></sl-icon>
                   Profile
                 </sl-menu-item>
@@ -219,12 +222,12 @@ export class AppLayout extends LitElement {
           label="Navigation"
           .open=${this.drawerOpen}
           @sl-hide=${() => {
-						this.drawerOpen = false;
-					}}
+            this.drawerOpen = false;
+          }}
           placement="start"
         >
           <nav class="drawer-nav">
-            <sl-button href="/dashboard" variant="text">
+            <sl-button href="/ variant="text">
               <sl-icon slot="prefix" name="speedometer"></sl-icon>
               Dashboard
             </sl-button>
@@ -247,5 +250,5 @@ export class AppLayout extends LitElement {
         </main>
       </div>
     `;
-	}
+  }
 }

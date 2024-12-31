@@ -30,4 +30,11 @@ export default defineConfig({
 			},
 		},
 	},
+	css: {
+		preprocessorOptions: {
+			css: {
+				imports: true,
+			},
+		},
+	},
 });

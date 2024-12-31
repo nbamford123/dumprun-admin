@@ -1,133 +1,82 @@
-import { get, type ApiError } from '@aws-amplify/api';
-import { fetchAuthSession } from 'aws-amplify/auth';
+import { APIClient } from './apiClient';
+import type { components } from '@/types/apiSchema';
 
-import type { HealthCheckResponse } from '@/types/apiTypes.js';
-import { authService } from './authService.js';
+type UpdateUser = components['schemas']['UpdateUser'];
+type NewUser = components['schemas']['NewUser'];
+type User = components['schemas']['User'];
 
-// Define a helper type for Amplify's response structure
-type AmplifyResponse<T> = Promise<{
-	body: T;
-	response: Response;
-	headers: Record<string, string>;
-}>;
+export class APIClientService extends APIClient {
+  private static instance: APIClientService;
 
-class ApiClient {
-	private static instance: ApiClient;
-	private apiName: string;
-  private cachedHeaders: Record<string, string> | null = null;
-	private headersFetchPromise: Promise<Record<string, string>> | null = null;
-
-	private constructor(apiName: string) {
-		this.apiName = apiName;
-	}
-
-	public static getInstance(): ApiClient {
-		if (!ApiClient.instance) {
-			ApiClient.instance = new ApiClient('DumpRunApi'); // Your configured API name
-		}
-		return ApiClient.instance;
-	}
-
-	// Helper method to get authorization headers
-	private async getAuthHeaders(): Promise<Record<string, string>> {
-    // If we have cached headers, use them
-    if (this.cachedHeaders) {
-      return this.cachedHeaders;
+  static getInstance(): APIClientService {
+    if (!APIClientService.instance) {
+      APIClientService.instance = new APIClientService(
+        import.meta.env.VITE_AWS_GATEWAY_API_BASE_PATH
+      );
     }
-
-    // If we're already fetching headers, return that promise
-    if (this.headersFetchPromise) {
-      return this.headersFetchPromise;
-    }
-
-    // Create a new promise for fetching headers
-    this.headersFetchPromise = (async () => {
-      try {
-        const session = await fetchAuthSession();
-        this.cachedHeaders = {
-          Authorization: `Bearer ${session.tokens?.idToken?.toString()}`,
-          'X-Amz-Security-Token': session.tokens?.accessToken?.toString() || '',
-        };
-        return this.cachedHeaders;
-      } finally {
-        // Clear the promise but keep the cached headers
-        this.headersFetchPromise = null;
-      }
-    })();
-
-    return this.headersFetchPromise;
+    return APIClientService.instance;
   }
 
-  public clearAuthHeaders(): void {
-    this.cachedHeaders = null;
-    this.headersFetchPromise = null;
+  getPostgresHealth = async () => {
+    return this.request({
+      path: '/health/postgres',
+      method: 'get',
+    });
+  };
+
+  getDynamoHealth = async () => {
+    return this.request({
+      path: '/health/dynamodb',
+      method: 'get',
+    });
+  };
+
+  async getDriver(driverId: string) {
+    return this.request({
+      path: '/drivers/{driverId}',
+      method: 'get',
+      pathParams: {
+        driverId,
+      },
+    });
   }
 
-	// Generic request handler
-	private async makeRequest<T>(path: string): Promise<T | undefined> {
-		const headers = await this.getAuthHeaders();
-		console.log(`Making request to ${path}`);
+  async getUsers(params?: { limit?: number; offset?: number }) {
+    return this.request({
+      path: '/users',
+      method: 'get',
+      queryParams: params,
+    });
+  }
 
-		try {
-			const result = await get({
-				apiName: this.apiName,
-				path,
-				options: {
-					headers,
-					withCredentials: true,
-				},
-			});
+  async getUser(userId: string): Promise<User> {
+    return this.request({
+      path: '/users/{userId}',
+      method: 'get',
+      pathParams: {
+        userId,
+      },
+    });
+  }
 
-			const apiResponse = await result.response;
-			return (await apiResponse.body.json()) as T;
-		} catch (err) {
-			console.error(`Error making request to ${path}:`, err);
-			if (err instanceof Error && 'response' in err) {
-				console.log(await (err as ApiError).response);
-			}
-			throw err;
-		}
-	}
+  async updateUser(userId: string, user: UpdateUser) {
+    return this.request({
+      path: '/users/{userId}',
+      method: 'put',
+      pathParams: {
+        userId,
+      },
+      body: user,
+    });
+  }
 
-	// Health checks
-	checkPostgresHealth = () => {
-		console.log('Checking postgres health');
-		return this.makeRequest<HealthCheckResponse>('v1/health/postgres');
-	};
-
-	checkDynamoDbHealth = () => {
-		console.log('Checking dynamodb health');
-		return this.makeRequest<HealthCheckResponse>('v1/health/dynamodb');
-	};
-	// Users
-	// async listUsers(params?: { limit?: number; offset?: number }) {
-	// 	type ResponseType =
-	// 		paths['/v1/users']['get']['responses'][200]['content']['application/json'];
-	// 	const result = (await get({
-	// 		apiName: this.apiName,
-	// 		path: '/v1/users',
-	// 		options: {
-	// 			queryParams: params,
-	// 		},
-	// 	})) as AmplifyResponse<ResponseType>;
-
-	// 	return (await result.response).body as ResponseType;
-	// }
-
-	// async createUser(newUser: components['schemas']['NewUser']) {
-	// 	type ResponseType =
-	// 		paths['/v1/users']['post']['responses'][201]['content']['application/json'];
-	// 	const result = (await post({
-	// 		apiName: this.apiName,
-	// 		path: '/v1/users',
-	// 		options: {
-	// 			body: newUser,
-	// 		},
-	// 	})) as AmplifyResponse<ResponseType>;
-
-	// 	return (await result.response).body as ResponseType;
-	// }
+  async createUser(user: NewUser) {
+    return this.request({
+      path: '/users',
+      method: 'post',
+      body: user,
+    });
+  }
 }
 
-// Export a single instance
-export const api = ApiClient.getInstance();
+export const apiClientService = APIClientService.getInstance();
