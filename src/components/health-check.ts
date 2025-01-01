@@ -52,7 +52,6 @@ export class HealthCheckIndicator extends LitElement {
   `;
 
   protected firstUpdated() {
-    console.log('first updated');
     this.checkHealth();
   }
 

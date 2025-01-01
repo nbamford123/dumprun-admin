@@ -5,11 +5,10 @@ import '@shoelace-style/shoelace/dist/components/card/card.js';
 import '@shoelace-style/shoelace/dist/components/input/input.js';
 import '@shoelace-style/shoelace/dist/components/radio-group/radio-group.js';
 import '@shoelace-style/shoelace/dist/components/radio-button/radio-button.js';
-import type { RouterLocation } from '@vaadin/router';
+import { Router, type RouterLocation } from '@vaadin/router';
 
 import { apiClientService } from '@/services/apiClientService.js';
 import { notify } from '@/services/toastService.js';
-import { router } from '@/router.js';
 
 import type { components } from '@/types/apiSchema.js';
 
@@ -65,7 +64,7 @@ export class UserView extends LitElement {
       state: 'OH',
       zipCode: '22212',
     },
-    phoneNumber: '720-288-0102',
+    phoneNumber: '720-555-1212',
     preferredContact: 'TEXT',
   };
   @state() private errors: Record<string, string> = {};
@@ -85,7 +84,6 @@ export class UserView extends LitElement {
     this.location = location;
     if (this.isEditing) {
       const id = this.location?.params?.id;
-      console.log('id', id);
       await this.loadContactData((id as string) ?? '');
     }
   }
@@ -96,7 +94,6 @@ export class UserView extends LitElement {
       this.loadError = '';
 
       const user = await apiClientService.getUser(id);
-      console.log('retrieved user ', user);
       this.formData = {
         firstName: user.firstName,
         lastName: user.lastName,
@@ -128,9 +125,9 @@ export class UserView extends LitElement {
       }
       notify('User created', 'success');
       // Navigate back to list view or wherever appropriate
-      router.render('/users');
+      Router.go('/users');
     } catch (error) {
-      notify('Error creating user', 'danger');
+      notify(`Error creating user ${(error as Error).message}`, 'danger');
       console.error('Error saving:', error);
     }
   }
@@ -315,10 +312,7 @@ export class UserView extends LitElement {
             </sl-radio-group>
           </div>
           <div class="button-group">
-            <sl-button
-              @click=${() => router.render('/users')}
-              variant="neutral"
-            >
+            <sl-button @click=${() => Router.go('/users')} variant="neutral">
               Cancel
             </sl-button>
             <sl-button type="submit" variant="primary">

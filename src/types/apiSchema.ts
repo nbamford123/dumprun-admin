@@ -493,7 +493,7 @@ export interface components {
             status?: "pending" | "available" | "accepted" | "in_progress" | "completed" | "cancelled" | "deleted";
         };
         Pickup: {
-            id?: string;
+            id: string;
             userId?: string;
             driverId?: string | null;
             /** @enum {string} */

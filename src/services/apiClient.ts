@@ -80,15 +80,26 @@ export class APIClient {
     }
 
     const response = await fetch(`${this.basePath}${url}`, options);
-    const responseBody = await response.json();
+    let responseBody = null;
+    // Check if there's content to parse
+    const contentType = response.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
+      try {
+        responseBody = await response.json();
+      } catch (error) {
+        console.warn('Failed to parse JSON response:', error);
+        responseBody = null;
+      }
+    }
+
     if (!response.ok) {
       throw new Error(
-        `HTTP error! status: ${response.status}: ${JSON.stringify(
-          responseBody
-        )}`
+        `HTTP error! status: ${response.status}${
+          responseBody ? `: ${JSON.stringify(responseBody)}` : ''
+        }`
       );
     }
 
-    return responseBody;
+    return responseBody || null;
   }
 }

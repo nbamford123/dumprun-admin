@@ -1,18 +1,17 @@
 // src/views/login-view.ts
 import { LitElement, html, css } from 'lit';
+import { Router } from '@vaadin/router';
 import { customElement, state } from 'lit/decorators.js';
+import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/card/card.js';
 import '@shoelace-style/shoelace/dist/components/input/input.js';
-import '@shoelace-style/shoelace/dist/components/button/button.js';
-import '@shoelace-style/shoelace/dist/components/spinner/spinner.js';
 
-import { router } from '@/router.js';
 import { authService } from '@/services/authService.js';
 import { notify } from '@/services/toastService.js';
 
 @customElement('login-view')
 export class LoginView extends LitElement {
-	static styles = css`
+  static styles = css`
     :host {
       display: block;
       min-height: 100vh;
@@ -61,36 +60,36 @@ export class LoginView extends LitElement {
     }
   `;
 
-	@state() private username = '';
-	@state() private password = '';
-	@state() private error = '';
-	@state() private loading = false;
+  @state() private username = '';
+  @state() private password = '';
+  @state() private error = '';
+  @state() private loading = false;
 
-	async handleSubmit(e: Event) {
-		e.preventDefault();
-		this.error = '';
-		this.loading = true;
+  async handleSubmit(e: Event) {
+    e.preventDefault();
+    this.error = '';
+    this.loading = true;
 
-		try {
-			await authService.signIn(this.username, this.password);
-			// Check if there was an intended route before redirect
-			const intendedRoute = sessionStorage.getItem('intendedRoute') || '/';
-			sessionStorage.removeItem('intendedRoute'); // Clean up
-			await router.render(intendedRoute);
-		} catch (err) {
-			this.error = err instanceof Error ? err.message : 'An error occurred';
-			notify(this.error, 'danger', 'exclamation-octagon');
-		} finally {
-			this.loading = false;
-		}
-	}
+    try {
+      await authService.signIn(this.username, this.password);
+      // Check if there was an intended route before redirect
+      const intendedRoute = sessionStorage.getItem('intendedRoute') || '/';
+      sessionStorage.removeItem('intendedRoute'); // Clean up
+      await Router.go(intendedRoute);
+    } catch (err) {
+      this.error = err instanceof Error ? err.message : 'An error occurred';
+      notify(this.error, 'danger', 'exclamation-octagon');
+    } finally {
+      this.loading = false;
+    }
+  }
 
-	render() {
-		return html`
+  render() {
+    return html`
       <div class="container">
         <sl-card>
           <h1 class="title">DumpRun Admin Login</h1>
-          
+
           <form @submit=${this.handleSubmit}>
             <sl-input
               label="Username"
@@ -99,8 +98,8 @@ export class LoginView extends LitElement {
               .value=${this.username}
               ?disabled=${this.loading}
               @sl-input=${(e: InputEvent) => {
-								this.username = (e.target as HTMLInputElement).value;
-							}}
+                this.username = (e.target as HTMLInputElement).value;
+              }}
               autocomplete="username"
             ></sl-input>
 
@@ -111,24 +110,24 @@ export class LoginView extends LitElement {
               .value=${this.password}
               ?disabled=${this.loading}
               @sl-input=${(e: InputEvent) => {
-								this.password = (e.target as HTMLInputElement).value;
-							}}
+                this.password = (e.target as HTMLInputElement).value;
+              }}
               password-toggle
               autocomplete="current-password"
             ></sl-input>
 
-            <sl-button type="submit" variant="primary" ?disabled=${this.loading}>
-              ${
-								this.loading
-									? html`
-                <sl-spinner></sl-spinner> Signing in...
-              `
-									: 'Sign In'
-							}
+            <sl-button
+              type="submit"
+              variant="primary"
+              ?disabled=${this.loading}
+            >
+              ${this.loading
+                ? html` <sl-spinner></sl-spinner> Signing in... `
+                : 'Sign In'}
             </sl-button>
           </form>
         </sl-card>
       </div>
     `;
-	}
+  }
 }

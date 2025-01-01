@@ -1,4 +1,3 @@
-// src/router/index.ts
 import {
   Router,
   type RouteContext,
@@ -69,10 +68,6 @@ export function initRouter(outlet: HTMLElement) {
     {
       path: '/login',
       component: 'login-view',
-      action: async () => {
-        await import('@/views/login-view');
-        return beforeRoute;
-      },
     },
     {
       path: '',
@@ -105,6 +100,48 @@ export function initRouter(outlet: HTMLElement) {
           component: 'user-view',
           action: async () => {
             await import('@/views/users/[id]');
+          },
+        },
+        {
+          path: '/drivers',
+          component: 'drivers-view',
+          action: async () => {
+            await import('@/views/drivers');
+          },
+        },
+        {
+          path: '/drivers/:id',
+          component: 'driver-view',
+          action: async () => {
+            await import('@/views/drivers/[id]');
+          },
+        },
+        {
+          path: '/drivers/new',
+          component: 'driver-view',
+          action: async () => {
+            await import('@/views/drivers/[id]');
+          },
+        },
+        {
+          path: '/pickups',
+          component: 'pickups-view',
+          action: async () => {
+            await import('@/views/pickups');
+          },
+        },
+        {
+          path: '/pickups/:id',
+          component: 'pickup-view',
+          action: async () => {
+            await import('@/views/pickups/[id]');
+          },
+        },
+        {
+          path: '/pickups/new',
+          component: 'pickup-view',
+          action: async () => {
+            await import('@/views/pickups/[id]');
           },
         },
         {

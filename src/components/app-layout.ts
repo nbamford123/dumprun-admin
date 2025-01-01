@@ -1,19 +1,19 @@
 // src/components/app-layout.ts
 import { LitElement, html, css } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import '@shoelace-style/shoelace/dist/components/drawer/drawer.js';
-import '@shoelace-style/shoelace/dist/components/icon-button/icon-button.js';
-import '@shoelace-style/shoelace/dist/components/dropdown/dropdown.js';
-import '@shoelace-style/shoelace/dist/components/menu/menu.js';
-import '@shoelace-style/shoelace/dist/components/menu-item/menu-item.js';
+import { Router } from '@vaadin/router';
 import '@shoelace-style/shoelace/dist/components/avatar/avatar.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
-import '@shoelace-style/shoelace/dist/components/icon/icon.js';
 import '@shoelace-style/shoelace/dist/components/divider/divider.js';
+import '@shoelace-style/shoelace/dist/components/drawer/drawer.js';
+import '@shoelace-style/shoelace/dist/components/dropdown/dropdown.js';
+import '@shoelace-style/shoelace/dist/components/icon/icon.js';
+import '@shoelace-style/shoelace/dist/components/icon-button/icon-button.js';
+import '@shoelace-style/shoelace/dist/components/menu/menu.js';
+import '@shoelace-style/shoelace/dist/components/menu-item/menu-item.js';
 
 import { authService } from '@/services/authService.js';
 import { notify } from '@/services/toastService.js';
-import { router } from '@/router.js';
 
 @customElement('app-layout')
 export class AppLayout extends LitElement {
@@ -136,7 +136,7 @@ export class AppLayout extends LitElement {
     try {
       await authService.signOut();
       notify('Logged out successfully', 'success');
-      router.render('/login');
+      Router.go('/login');
     } catch (error) {
       notify('Failed to log out', 'danger');
     }
@@ -161,7 +161,7 @@ export class AppLayout extends LitElement {
             <!-- Logo -->
             <a href="/" class="logo" @click=${(e: Event) => {
               e.preventDefault();
-              router.render('/');
+              Router.go('/');
             }}>
               <sl-icon name="truck"></sl-icon>
               DumpRun Admin Tool
@@ -180,6 +180,16 @@ export class AppLayout extends LitElement {
               Users
             </sl-button>
             
+            <sl-button href="/drivers" variant="text" size="small">
+              <sl-icon slot="prefix" name="truck-front"></sl-icon>
+              Drivers
+            </sl-button>
+
+            <sl-button href="/pickups" variant="text" size="small">
+              <sl-icon slot="prefix" name="trash3"></sl-icon>
+              Pickups
+            </sl-button>
+
             <sl-button href="/settings" variant="text" size="small">
               <sl-icon slot="prefix" name="gear"></sl-icon>
               Settings
@@ -196,12 +206,12 @@ export class AppLayout extends LitElement {
               ></sl-avatar>
 
               <sl-menu class="user-menu">
-                <sl-menu-item @click=${() => router.render('/users')}>
+                <sl-menu-item @click=${() => Router.go('/users')}>
                   <sl-icon slot="prefix" name="person"></sl-icon>
                   Profile
                 </sl-menu-item>
                 
-                <sl-menu-item @click=${() => router.render('/settings')}>
+                <sl-menu-item @click=${() => Router.go('/settings')}>
                   <sl-icon slot="prefix" name="gear"></sl-icon>
                   Settings
                 </sl-menu-item>

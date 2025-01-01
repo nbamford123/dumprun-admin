@@ -6,7 +6,10 @@ import '@/components/admin-app';
 import '@/components/app-layout';
 
 // Set the base path for shoelace to find assets
-setBasePath('node_modules/@shoelace-style/shoelace/dist');
+if (import.meta.env.DEV) 
+  setBasePath('node_modules/@shoelace-style/shoelace/dist');
+else 
+  setBasePath('assets');
 
 // Configure auth
 authService.configure({
