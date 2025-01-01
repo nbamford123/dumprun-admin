@@ -12,12 +12,12 @@ import { notify } from '@/services/toastService.js';
 
 import type { components } from '@/types/apiSchema.js';
 
-type Driver = components['schemas']['Driver'];
-type NewDriver = components['schemas']['NewDriver'];
-type UpdateDriver = components['schemas']['UpdateDriver'];
+type User = components['schemas']['User'];
+type NewUser = components['schemas']['NewUser'];
+type UpdateUser = components['schemas']['UpdateUser'];
 
-@customElement('driver-view')
-export class DriverView extends LitElement {
+@customElement('user-view')
+export class UserView extends LitElement {
   static styles = css`
     :host {
       display: block;
@@ -52,40 +52,26 @@ export class DriverView extends LitElement {
       display: flex;
       gap: 2rem;
     }
-    .vehicle-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 1rem;
-    }
-    h3 {
-      margin: 1rem 0 0.5rem;
-      color: var(--sl-color-neutral-700);
-      font-size: var(--sl-font-size-medium);
-      font-weight: var(--sl-font-weight-semibold);
-    }
   `;
 
-  @state() private formData: NewDriver | UpdateDriver = {
+  @state() private formData: NewUser = {
     firstName: 'Test',
-    lastName: 'Driver',
+    lastName: 'User',
     email: 'none@none.com',
     address: {
       street: '123 Main',
-      city: 'Detroit',
-      state: 'MI',
+      city: 'Sandusky',
+      state: 'OH',
       zipCode: '22212',
     },
-    phoneNumber: '720-525-1212',
+    phoneNumber: '720-555-1212',
     preferredContact: 'TEXT',
-    vehicleMake: 'Ford',
-    vehicleModel: 'F150',
-    vehicleYear: 1996,
   };
   @state() private errors: Record<string, string> = {};
   @state() private loading = false;
   @state() private loadError = '';
 
-  // Editing if driver id is specified
+  // Editing if user id is specified
   private get isEditing() {
     return !!this.location?.params?.id && this.location?.params?.id !== 'new';
   }
@@ -95,7 +81,6 @@ export class DriverView extends LitElement {
 
   // Called by Vaadin Router when the component is navigated to
   async onBeforeEnter(location: RouterLocation) {
-    console.log('id', this.location?.params?.id);
     this.location = location;
     if (this.isEditing) {
       const id = this.location?.params?.id;
@@ -108,21 +93,18 @@ export class DriverView extends LitElement {
       this.loading = true;
       this.loadError = '';
 
-      const driver = await apiClientService.getDriver(id);
+      const user = await apiClientService.getUser(id);
       this.formData = {
-        firstName: driver.firstName,
-        lastName: driver.lastName,
-        email: driver.email,
-        address: { ...driver.address },
-        phoneNumber: driver.phoneNumber,
-        preferredContact: driver.preferredContact || 'TEXT',
-        vehicleMake: driver.vehicleMake,
-        vehicleModel: driver.vehicleModel,
-        vehicleYear: driver.vehicleYear,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        address: { ...user.address },
+        phoneNumber: user.phoneNumber,
+        preferredContact: user.preferredContact || 'TEXT',
       };
     } catch (error) {
-      console.error('Error loading driver:', error);
-      this.loadError = 'Failed to load driver. Please try again.';
+      console.error('Error loading user:', error);
+      this.loadError = 'Failed to load user. Please try again.';
     } finally {
       this.loading = false;
     }
@@ -133,21 +115,19 @@ export class DriverView extends LitElement {
     try {
       let response: Response;
       if (this.isEditing) {
-        const { phoneNumber: _, ...updateDriver } = this.formData as NewDriver;
-        response = await apiClientService.updateDriver(
+        const { phoneNumber: _, ...updateUser } = this.formData;
+        response = await apiClientService.updateUser(
           this.location?.params?.id as string,
-          updateDriver
+          updateUser
         );
       } else {
-        response = await apiClientService.createDriver(
-          this.formData as NewDriver
-        );
+        response = await apiClientService.createUser(this.formData as NewUser);
       }
-      notify('Driver created', 'success');
+      notify('User created', 'success');
       // Navigate back to list view or wherever appropriate
-      Router.go('/drivers');
+      Router.go('/users');
     } catch (error) {
-      notify(`Error creating driver ${(error as Error).message}`, 'danger');
+      notify(`Error creating user ${(error as Error).message}`, 'danger');
       console.error('Error saving:', error);
     }
   }
@@ -186,13 +166,6 @@ export class DriverView extends LitElement {
           ...this.formData.address,
           [addressField]: value,
         },
-      } as Driver;
-    }
-    // Convert number fields to actual numbers before setting in formData
-    else if (field === 'vehicleYear') {
-      this.formData = {
-        ...this.formData,
-        [field]: value ? Number.parseInt(value) : undefined,
       };
     } else {
       this.formData = {
@@ -216,7 +189,7 @@ export class DriverView extends LitElement {
     return html`
       <sl-card>
         <sl-header slot="header">
-          <h2>${this.isEditing ? 'Edit Driver' : 'New Driver'}</h2>
+          <h2>${this.isEditing ? 'Edit User' : 'New User'}</h2>
         </sl-header>
 
         <form @submit=${this.handleSubmit} class="form-grid">
@@ -317,7 +290,7 @@ export class DriverView extends LitElement {
               id="phoneNumber"
               label="Phone Number"
               name="phoneNumber"
-              value=${(this.formData as Driver).phoneNumber}
+              value=${this.formData.phoneNumber}
               @sl-input=${this.handleInput}
               ?readOnly=${this.isEditing}
               ?invalid=${this.errors.phoneNumber}
@@ -338,51 +311,12 @@ export class DriverView extends LitElement {
               <sl-radio-button value="CALL">Call</sl-radio-button>
             </sl-radio-group>
           </div>
-          <h3>Vehicle Information</h3>
-          <div class="vehicle-grid">
-            <div class="form-field">
-              <sl-input
-                id="vehicleMake"
-                label="Vehicle Make"
-                name="vehicleMake"
-                value=${this.formData.vehicleMake}
-                @sl-input=${this.handleInput}
-              ></sl-input>
-            </div>
-
-            <div class="form-field">
-              <sl-input
-                id="vehicleModel"
-                label="Vehicle Model"
-                name="vehicleModel"
-                value=${this.formData.vehicleModel}
-                @sl-input=${this.handleInput}
-              ></sl-input>
-            </div>
-
-            <div class="form-field">
-              <sl-input
-                id="vehicleYear"
-                label="Vehicle Year"
-                name="vehicleYear"
-                type="number"
-                min="1900"
-                max=${new Date().getFullYear() + 1}
-                value=${this.formData.vehicleYear}
-                @sl-input=${this.handleInput}
-                ?invalid=${this.errors.vehicleYear}
-              ></sl-input>
-              ${this.errors.vehicleYear
-                ? html`<div class="error-text">${this.errors.vehicleYear}</div>`
-                : ''}
-            </div>
-          </div>
           <div class="button-group">
-            <sl-button @click=${() => Router.go('/drivers')} variant="neutral">
+            <sl-button @click=${() => Router.go('/users')} variant="neutral">
               Cancel
             </sl-button>
             <sl-button type="submit" variant="primary">
-              ${this.isEditing ? 'Update Driver' : 'Create Driver'}
+              ${this.isEditing ? 'Update User' : 'Create User'}
             </sl-button>
           </div>
         </form>
@@ -392,6 +326,6 @@ export class DriverView extends LitElement {
 }
 declare global {
   interface HTMLElementTagNameMap {
-    'driver-view': DriverView;
+    'user-view': UserView;
   }
 }

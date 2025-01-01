@@ -1,9 +1,11 @@
 // src/services/auth.service.ts
 import { Amplify } from 'aws-amplify';
 import {
+	fetchAuthSession,
 	getCurrentUser,
 	signIn,
 	signOut,
+	type AuthSession,
 	type SignInOutput,
 } from 'aws-amplify/auth';
 
@@ -25,6 +27,7 @@ export interface AuthConfig {
 
 export class AuthService {
 	private static instance: AuthService;
+	private cachedSession: AuthSession | null = null;
 
 	private constructor() {
 		// Private constructor for singleton
@@ -38,7 +41,16 @@ export class AuthService {
 	}
 
 	configure(config: AuthConfig) {
+		console.log(config)
 		Amplify.configure({
+			API: {
+				REST: {
+					DumpRunApi: {
+						endpoint: import.meta.env.VITE_AWS_GATEWAY_API_BASE_PATH || '',
+						region: import.meta.env.VITE_AWS_REGION,
+					},
+				},
+			},
 			Auth: {
 				Cognito: {
 					userPoolId: config.userPoolId,
@@ -51,21 +63,31 @@ export class AuthService {
 		});
 	}
 
-	async signIn(username: string, password: string): Promise<SignInOutput> {
-		try {
-			const signInResult = await signIn({
-				username,
-				password,
-			});
-			return signInResult;
-		} catch (error) {
-			throw this.handleError(error as CognitoError);
+	async getAuthSession(): Promise<AuthSession> {
+		if (!this.cachedSession) {
+			this.cachedSession = await fetchAuthSession();
 		}
+		return this.cachedSession;
+	}
+
+	async signIn(username: string, password: string): Promise<SignInOutput> {
+		// try {
+		const signInResult = await signIn({
+			username,
+			password,
+		});
+		// Cache the session right after successful sign in
+		this.cachedSession = await fetchAuthSession();
+		return signInResult;
+		// } catch (error) {
+		// 	throw this.handleError(error as CognitoError);
+		// }
 	}
 
 	async signOut() {
 		try {
 			await signOut();
+			this.cachedSession = null; // Clear cached session on sign out
 		} catch (error) {
 			throw this.handleError(error as CognitoError);
 		}
@@ -89,6 +111,7 @@ export class AuthService {
 	}
 
 	private handleError(error: CognitoError): Error {
+		console.log(error);
 		if (!error.code) {
 			return new Error('An unknown error occurred');
 		}

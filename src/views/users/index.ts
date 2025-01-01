@@ -6,10 +6,10 @@ import { DataGrid } from '@/components/data-grid';
 import { apiClientService } from '@/services/apiClientService.js';
 import type { components } from '@/types/apiSchema.js';
 
-type Driver = components['schemas']['Driver'];
+type User = components['schemas']['User'];
 
-@customElement('drivers-grid')
-class DriversGrid extends DataGrid<Driver> {
+@customElement('users-grid')
+class UsersGrid extends DataGrid<User> {
   constructor() {
     super();
     this.columnDefs = [
@@ -17,7 +17,7 @@ class DriversGrid extends DataGrid<Driver> {
         field: 'id',
         sort: 'desc',
         cellRenderer: (id: { value: string }) =>
-          `<a href="/drivers/${id.value}">${id.value}</a>`,
+          `<a href="/users/${id.value}">${id.value}</a>`,
       },
       { field: 'firstName' },
       { field: 'lastName' },
@@ -30,42 +30,37 @@ class DriversGrid extends DataGrid<Driver> {
           return `${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}`;
         },
       },
-      { field: 'vehicleMake' },
-      { field: 'vehicleModel' },
-      { field: 'vehicleYear' },
       { field: 'createdAt' },
       { field: 'updatedAt' },
       ...this.columnDefs,
     ];
-    this.dataType = 'driver';
+    this.dataType = 'user';
     this.fetchData = async () => {
-      const data = await apiClientService.getDrivers();
-      return data.drivers;
+      const data = await apiClientService.getUsers();
+      return data.users;
     };
-    this.handleDelete = apiClientService.deleteDriver;
+    this.handleDelete = apiClientService.deleteUser;
   }
 }
 declare global {
   interface HTMLElementTagNameMap {
-    'drivers-grid': DriversGrid;
+    'users-grid': UsersGrid;
   }
 }
 
-@customElement('drivers-view')
-class DriversView extends LitElement {
+@customElement('users-view')
+class UsersView extends LitElement {
   render() {
     return html`
-      <h2>Drivers</h2>
-      <drivers-grid></drivers-grid>
-      <sl-button href="/drivers/new" variant="primary">
-        Create Driver</sl-button
-      >
+      <h2>Users</h2>
+      <users-grid></users-grid>
+      <sl-button href="/users/new" variant="primary"> Create User </sl-button>
     `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'drivers-view': DriversView;
+    'users-view': UsersView;
   }
 }
