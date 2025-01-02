@@ -2,8 +2,9 @@ import '@shoelace-style/shoelace/dist/themes/light.css';
 import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
 
 import { authService } from '@/services/authService.js';
-import '@/components/admin-app';
-import '@/components/app-layout';
+import '@/components/admin-app.js';
+import '@/components/app-layout.js';
+import '@/views/login-view.js';
 
 // Set the base path for shoelace to find assets
 if (import.meta.env.DEV) 
