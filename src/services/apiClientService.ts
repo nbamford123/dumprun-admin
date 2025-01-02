@@ -12,6 +12,7 @@ type UpdatePickup = components['schemas']['UpdatePickup'];
 type NewPickup = components['schemas']['NewPickup'];
 type Pickup = components['schemas']['Pickup'];
 
+// Provide helpers for api calls
 export class APIClientService extends APIClient {
   private static instance: APIClientService;
 

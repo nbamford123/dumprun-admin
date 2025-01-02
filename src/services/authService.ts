@@ -25,6 +25,7 @@ export interface AuthConfig {
 	};
 }
 
+// Handle AWS authentication using amplify
 export class AuthService {
 	private static instance: AuthService;
 	private cachedSession: AuthSession | null = null;
