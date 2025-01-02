@@ -96,6 +96,7 @@ export class PickupView extends LitElement {
     if (this.isEditing) {
       const id = this.location?.params?.id;
       // await this.loadContactData((id as string) ?? '');
+      console.log("editing")
     }
   }
 
