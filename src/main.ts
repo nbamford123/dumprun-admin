@@ -10,7 +10,7 @@ import '@/views/login-view.js';
 if (import.meta.env.DEV) 
   setBasePath('node_modules/@shoelace-style/shoelace/dist');
 else 
-  setBasePath('assets');
+  setBasePath('assets/shoelace');
 
 // Configure auth
 authService.configure({
