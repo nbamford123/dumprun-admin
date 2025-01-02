@@ -1,14 +1,14 @@
 name: Deploy to Netlify
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      
+      - uses: actions/checkout@v4
+
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -18,19 +18,18 @@ jobs:
         uses: pnpm/action-setup@v2
         with:
           version: 9
-          
+
       - name: Install dependencies
         run: pnpm install
-        
+
       - name: Build
         run: pnpm build
-        
+
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli
+
       - name: Deploy to Netlify
-        uses: nwtgck/actions-netlify@v2
-        with:
-          publish-dir: './dist'
-          production-branch: main
-          deploy-message: "Deploy from GitHub Actions"
+        run: netlify deploy --prod --dir=dist --message="Deploy from GitHub Actions" --clear
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
