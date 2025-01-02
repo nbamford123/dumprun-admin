@@ -6,7 +6,7 @@ import '@/components/admin-app.js';
 import '@/components/app-layout.js';
 import '@/views/login-view.js';
 
-// Set the base path for shoelace to find assets
+// shoelace assets base path
 if (import.meta.env.DEV) 
   setBasePath('node_modules/@shoelace-style/shoelace/dist');
 else 
