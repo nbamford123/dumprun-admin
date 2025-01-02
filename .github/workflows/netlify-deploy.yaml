@@ -25,17 +25,12 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Install Netlify CLI
-        run: npm install -g netlify-cli
-
-      - name: Clear Netlify Cache
-        run: netlify build --context production --clear
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-
       - name: Deploy to Netlify
-        run: netlify deploy --prod --dir=dist --message="Deploy from GitHub Actions"
+        uses: nwtgck/actions-netlify@v3.0
+        with:
+          publish-dir: './dist'
+          production-branch: main
+          deploy-message: 'Deploy from GitHub Actions'
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
