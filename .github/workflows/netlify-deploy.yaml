@@ -25,6 +25,14 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Purge Netlify Cache
+        run: |
+          curl -X POST \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer ${{ secrets.NETLIFY_AUTH_TOKEN }}" \
+          --data '{"site_id": "${{ secrets.NETLIFY_SITE_ID }}"}' \
+          'https://api.netlify.com/api/v1/purge'
+      
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v3.0
         with:
