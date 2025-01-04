@@ -1,13 +1,12 @@
 import { LitElement, html, css } from 'lit';
 import { property, query, state } from 'lit/decorators.js';
-import {
+import type {
   // createGrid,
-  type GridApi,
-  type GridOptions,
-  type ColDef,
-  type GridReadyEvent,
-  type ICellRendererParams,
-  themeQuartz,
+  GridApi,
+  GridOptions,
+  ColDef,
+  GridReadyEvent,
+  ICellRendererParams,
 } from 'ag-grid-community';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/dialog/dialog.js';
@@ -45,14 +44,14 @@ export class DataGrid<T extends { id: string }> extends LitElement {
   // Define the delete column for all grids
   protected columnDefs: ColDef[] = [
     {
-      headerName: '',
       field: 'delete',
+      headerName: '',
       width: 20,
       cellRenderer: this.deleteButtonRenderer.bind(this),
       cellStyle: { padding: '0' }, // Add some padding for the button
     },
   ];
-  private grid?: GridApi<T>;
+  protected grid?: GridApi<T>;
   // Track theme initialization
   private static themeInitialized = false;
   @query('sl-dialog')
@@ -113,7 +112,12 @@ export class DataGrid<T extends { id: string }> extends LitElement {
       this.dataToDelete = null;
     } catch (error) {
       console.error('Failed to delete data:', error);
-      notify(`Failed to delete ${this.dataType}`, 'danger');
+      notify(
+        `Failed to delete ${this.dataType}: ${
+          (error as { message: string }).message
+        }`,
+        'danger'
+      );
     }
   }
 
