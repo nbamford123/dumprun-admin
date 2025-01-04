@@ -8,9 +8,9 @@ type User = components['schemas']['User'];
 type UpdateDriver = components['schemas']['UpdateDriver'];
 type NewDriver = components['schemas']['NewDriver'];
 type Driver = components['schemas']['Driver'];
-type UpdatePickup = components['schemas']['UpdatePickup'];
-type NewPickup = components['schemas']['NewPickup'];
-type Pickup = components['schemas']['Pickup'];
+export type UpdatePickup = components['schemas']['UpdatePickup'];
+export type NewPickup = components['schemas']['NewPickup'];
+export type Pickup = components['schemas']['Pickup'];
 
 // Provide helpers for api calls
 export class APIClientService extends APIClient {
@@ -167,6 +167,24 @@ export class APIClientService extends APIClient {
     return this.request({
       path: '/pickups/{pickupId}',
       method: 'delete',
+      pathParams: {
+        pickupId,
+      },
+    });
+  };
+  acceptPickup = async (pickupId: string) => {
+    return this.request({
+      path: '/pickups/{pickupId}/accept',
+      method: 'post',
+      pathParams: {
+        pickupId,
+      },
+    });
+  };
+  cancelAcceptedPickup = async (pickupId: string) => {
+    return this.request({
+      path: '/pickups/{pickupId}/cancel-acceptance',
+      method: 'post',
       pathParams: {
         pickupId,
       },
