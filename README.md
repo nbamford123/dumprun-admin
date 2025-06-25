@@ -11,7 +11,7 @@ Administrative dashboard for the DumpRun platform - manage operations, monitor p
 - **Build Tool**: Vite
 - **Development Proxy**: Custom Deno proxy server
 - **Code Quality**: Biome (linting), TypeScript
-- **Deploy** Netflify, via github actions
+- **Deploy**: Netflify, via github actions
 
 ## Development
 
